@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusMsg — Nouveau message</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <style>
+    .compose-form { max-width: 680px; }
+    .compose-form .field { margin-bottom: 18px; }
+    .compose-form .field label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: var(--color-text-muted); text-transform: uppercase;
+      letter-spacing: .05em; margin-bottom: 6px;
+    }
+    .compose-form textarea {
+      min-height: 200px; resize: vertical; line-height: 1.6;
+    }
+    .compose-actions {
+      display: flex; gap: 10px; margin-top: 8px;
+    }
+    .user-dropdown {
+      position: relative;
+    }
+    .user-suggestions {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      max-height: 200px; overflow-y: auto;
+      z-index: 100; display: none;
+      box-shadow: var(--shadow-md);
+    }
+    .user-suggestions.show { display: block; }
+    .user-option {
+      padding: 10px 14px; cursor: pointer;
+      font-size: 13px; display: flex; justify-content: space-between;
+      align-items: center; transition: background .1s;
+    }
+    .user-option:hover { background: var(--color-bg); }
+    .user-option .opt-name { font-weight: 600; color: var(--color-text); }
+    .user-option .opt-info { font-size: 11px; color: var(--color-text-muted); }
+    .selected-user {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--color-primary-bg); color: var(--color-primary);
+      padding: 6px 12px; border-radius: 99px;
+      font-size: 13px; font-weight: 600; margin-top: 6px;
+    }
+    .selected-user .remove-user {
+      cursor: pointer; font-size: 16px; line-height: 1;
+      color: var(--color-danger); margin-left: 4px;
+    }
+    .success-banner {
+      display: none; padding: 16px 20px;
+      background: var(--color-success-bg);
+      border: 1px solid var(--color-success);
+      border-radius: var(--radius-md);
+      color: var(--color-success); font-weight: 600;
+      margin-bottom: 16px; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ── Sidebar ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">✉</div>
+      <span class="logo-text">CampusMsg</span>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-name" id="userName">—</div>
+      <div class="user-id" id="userId">—</div>
+      <div class="user-dept" id="userDept">—</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Messages</div>
+      <a class="nav-item" href="/pages/inbox.html">
+        <span class="nav-icon">📥</span> Boîte de réception
+      </a>
+      <a class="nav-item" href="#sent" onclick="window.location='/pages/inbox.html#sent'">
+        <span class="nav-icon">📤</span> Messages envoyés
+      </a>
+      <a class="nav-item active" href="/pages/compose.html">
+        <span class="nav-icon">✏️</span> Nouveau message
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="nav-item" id="btnLogout" href="#">
+        <span class="nav-icon">🚪</span> Déconnexion
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main Area ───────────────────────────────────────── -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="topbar-title">Nouveau message</div>
+      <div class="topbar-actions">
+        <a href="/pages/inbox.html" class="btn-ghost" style="text-decoration:none;">← Retour</a>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="success-banner" id="successBanner">✅ Message envoyé avec succès !</div>
+
+      <div class="card compose-form" id="composeForm">
+        <div class="field">
+          <label for="recipientSearch">Destinataire</label>
+          <div class="user-dropdown">
+            <input type="text" id="recipientSearch" placeholder="Rechercher un étudiant..."
+                   autocomplete="off" spellcheck="false">
+            <div class="user-suggestions" id="userSuggestions"></div>
+          </div>
+          <div id="selectedRecipient"></div>
+        </div>
+
+        <div class="field">
+          <label for="subject">Sujet</label>
+          <input type="text" id="subject" placeholder="Objet du message" maxlength="200">
+        </div>
+
+        <div class="field">
+          <label for="msgBody">Message</label>
+          <textarea id="msgBody" placeholder="Écrivez votre message ici..." maxlength="5000"></textarea>
+        </div>
+
+        <div class="alert-box error" id="errorBox" style="display:none;margin-bottom:14px;"></div>
+
+        <div class="compose-actions">
+          <button class="btn-primary" id="btnSend">📨 Envoyer</button>
+          <a href="/pages/inbox.html" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Annuler</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/compose.js"></script>
+</body>
+</html>

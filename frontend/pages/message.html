@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusMsg — Message</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <style>
+    .msg-detail { max-width: 720px; }
+    .msg-header { margin-bottom: 20px; }
+    .msg-header h2 {
+      font-size: 20px; font-weight: 700;
+      color: var(--color-text); margin-bottom: 14px;
+    }
+    .msg-meta-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px 14px; font-size: 13px;
+    }
+    .msg-meta-grid .meta-label {
+      font-weight: 600; color: var(--color-text-muted);
+    }
+    .msg-meta-grid .meta-value {
+      color: var(--color-text);
+    }
+    .msg-body-content {
+      padding: 20px 0;
+      border-top: 1px solid var(--color-border);
+      margin-top: 16px;
+      font-size: 15px; line-height: 1.7;
+      color: var(--color-text);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .msg-actions {
+      display: flex; gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ── Sidebar ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">✉</div>
+      <span class="logo-text">CampusMsg</span>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-name" id="userName">—</div>
+      <div class="user-id" id="userId">—</div>
+      <div class="user-dept" id="userDept">—</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Messages</div>
+      <a class="nav-item" href="/pages/inbox.html">
+        <span class="nav-icon">📥</span> Boîte de réception
+      </a>
+      <a class="nav-item" href="/pages/inbox.html#sent">
+        <span class="nav-icon">📤</span> Messages envoyés
+      </a>
+      <a class="nav-item" href="/pages/compose.html">
+        <span class="nav-icon">✏️</span> Nouveau message
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="nav-item" id="btnLogout" href="#">
+        <span class="nav-icon">🚪</span> Déconnexion
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main Area ───────────────────────────────────────── -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="topbar-title">Détail du message</div>
+      <div class="topbar-actions">
+        <a href="/pages/inbox.html" class="btn-ghost" style="text-decoration:none;">← Retour</a>
+      </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <div class="loading-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/message.js"></script>
+</body>
+</html>
