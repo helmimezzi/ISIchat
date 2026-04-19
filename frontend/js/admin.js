@@ -239,28 +239,28 @@
     }
 
     let html = `
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <table>
         <thead>
-          <tr style="background:var(--color-bg);border-bottom:2px solid var(--color-border);">
-            <th style="padding:10px 14px;text-align:left;font-weight:600;">Adresse IP</th>
-            <th style="padding:10px 14px;text-align:left;font-weight:600;">Student ID</th>
-            <th style="padding:10px 14px;text-align:center;font-weight:600;">Tentatives</th>
-            <th style="padding:10px 14px;text-align:right;font-weight:600;">Dernière tentative</th>
+          <tr>
+            <th>Adresse IP</th>
+            <th>Student ID</th>
+            <th style="text-align:center;">Tentatives</th>
+            <th style="text-align:right;">Dernière tentative</th>
           </tr>
         </thead>
         <tbody>`;
 
     for (const ip of ips) {
       html += `
-        <tr style="border-bottom:1px solid var(--color-border);">
-          <td style="padding:10px 14px;font-family:var(--font-mono);font-weight:600;">
+        <tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">
             ${escapeHtml(ip.ip_address)}
           </td>
-          <td style="padding:10px 14px;">${escapeHtml(ip.student_id || '—')}</td>
-          <td style="padding:10px 14px;text-align:center;">
+          <td>${escapeHtml(ip.student_id || '—')}</td>
+          <td style="text-align:center;">
             <span class="badge badge-danger">${ip.attempts}</span>
           </td>
-          <td style="padding:10px 14px;text-align:right;color:var(--color-text-muted);">
+          <td style="text-align:right;color:var(--color-text-muted);">
             ${formatDate(ip.last_attempt)}
           </td>
         </tr>`;
@@ -281,24 +281,28 @@
     }
 
     let html = `
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <table>
         <thead>
-          <tr style="background:var(--color-bg);border-bottom:2px solid var(--color-border);">
-            <th style="padding:10px 14px;text-align:left;font-weight:600;">Student ID</th>
-            <th style="padding:10px 14px;text-align:left;font-weight:600;">Nom complet</th>
-            <th style="padding:10px 14px;text-align:left;font-weight:600;">Département</th>
+          <tr>
+            <th>Student ID</th>
+            <th>Nom complet</th>
+            <th>Email</th>
+            <th>Département</th>
+            <th>Adresse IP</th>
           </tr>
         </thead>
         <tbody>`;
 
     for (const s of students) {
       html += `
-        <tr style="border-bottom:1px solid var(--color-border);">
-          <td style="padding:10px 14px;font-family:var(--font-mono);font-weight:600;">
+        <tr>
+          <td style="font-family:var(--font-mono);font-weight:600;">
             ${escapeHtml(s.student_id)}
           </td>
-          <td style="padding:10px 14px;">${escapeHtml(s.full_name)}</td>
-          <td style="padding:10px 14px;color:var(--color-text-muted);">${escapeHtml(s.department || '—')}</td>
+          <td>${escapeHtml(s.full_name)}</td>
+          <td style="font-size:12px;">${escapeHtml(s.email || '—')}</td>
+          <td style="color:var(--text-secondary);">${escapeHtml(s.department || '—')}</td>
+          <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);">${escapeHtml(s.last_ip || '—')}</td>
         </tr>`;
     }
 

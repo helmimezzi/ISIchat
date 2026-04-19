@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISIchat — Messagerie</title>
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <style>
+    /* ── Conversions List (Sidebar) ───────────────────────── */
+    .chat-sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .btn-new-chat {
+      width: 100%;
+      padding: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .conversations-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .conv-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: all .2s var(--ease-out);
+      color: var(--text-primary);
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .conv-item:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-subtle);
+      transform: translateX(3px);
+    }
+
+    .conv-item.active {
+      background: linear-gradient(135deg, rgba(26, 41, 128, 0.15), rgba(38, 166, 74, 0.08));
+      border-color: var(--border-brand);
+      position: relative;
+    }
+
+    .conv-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 24px;
+      background: var(--gradient-brand);
+      border-radius: var(--r-pill);
+    }
+
+    .conv-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(26, 41, 128, 0.2), rgba(38, 166, 74, 0.1));
+      color: var(--text-link);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border-brand);
+    }
+
+    .conv-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .conv-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conv-preview {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .conv-meta {
+      text-align: right;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .conv-time {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .conv-unread {
+      width: 8px;
+      height: 8px;
+      background: var(--color-info);
+      border-radius: 50%;
+      box-shadow: var(--glow-blue);
+    }
+
+    /* ── Chat Area ────────────────────────────────────────── */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg-deep);
+      position: relative;
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chat-bubble-wrapper {
+      display: flex;
+      flex-direction: column;
+      max-width: 75%;
+    }
+
+    .chat-bubble-wrapper.me {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .chat-bubble-wrapper.them {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .chat-bubble {
+      padding: 12px 16px;
+      font-size: 14.5px;
+      line-height: 1.5;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .me .chat-bubble {
+      background: var(--gradient-brand);
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: var(--shadow-sm), var(--glow-blue);
+    }
+
+    .msg-actions {
+      position: absolute;
+      top: 50%;
+      right: 100%;
+      margin-right: 10px;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity .2s;
+      z-index: 5;
+    }
+    .me:hover .msg-actions { opacity: 1; }
+
+    .btn-msg-action {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-dim);
+      color: var(--text-secondary);
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-msg-action:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+      border-color: var(--border-default);
+    }
+    .btn-msg-action.delete:hover {
+      color: var(--color-danger);
+      background: var(--color-danger-bg);
+      border-color: var(--color-danger);
+    }
+
+    .them .chat-bubble {
+      background: var(--bg-raised);
+      color: var(--text-primary);
+      border: 1px solid var(--border-dim);
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-time {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+
+    /* ── Intro state ──────────────────────────────────────── */
+    .chat-intro {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .chat-intro .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+
+    /* ── Chat Input ───────────────────────────────────────── */
+    .chat-input-area {
+      padding: 16px 24px;
+      background: rgba(12, 17, 32, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-dim);
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      z-index: 10;
+    }
+
+    .chat-input-box {
+      flex: 1;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-default);
+      border-radius: var(--r-xl);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      transition: all .2s;
+    }
+
+    .chat-input-box:focus-within {
+      border-color: var(--border-focus);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 3px rgba(46, 68, 198, 0.15);
+    }
+
+    .chat-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 14.5px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      max-height: 120px;
+      padding: 0;
+    }
+
+    .chat-textarea::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .btn-send {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: var(--glow-blue);
+      transition: transform .2s var(--ease-spring);
+    }
+
+    .btn-send.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: scale(0.9);
+      box-shadow: none;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-dim);
+      color: var(--text-tertiary);
+    }
+
+    .btn-send:not(.disabled):hover {
+      transform: scale(1.1);
+    }
+
+    /* ── Image Attachment ─────────────────────────────────── */
+    .btn-attach {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      transition: all .2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-attach:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .image-preview-container {
+      display: none;
+      padding: 8px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(0,0,0,0.2);
+    }
+    .image-preview-container.show {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .image-thumb {
+      width: 60px; height: 60px;
+      border-radius: var(--r-sm);
+      object-fit: cover;
+      border: 1px solid var(--border-dim);
+    }
+    .btn-remove-image {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; cursor: pointer; border: none;
+    }
+    
+    .chat-bubble img.attached-image {
+      max-width: 100%;
+      border-radius: var(--r-sm);
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* ── Search Overlay ───────────────────────────────────── */
+    .search-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-deep);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+    }
+
+    .search-overlay.show {
+      display: flex;
+    }
+
+    .search-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-header input {
+      flex: 1;
+      border-radius: var(--r-pill);
+      padding: 10px 18px;
+    }
+
+    .btn-close-search {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-raised);
+      color: var(--text-primary);
+    }
+
+    .search-results {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- ── Sidebar ─────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon"><img src="/assets/images/logo.png" alt="ISIchat"></div>
+        <span class="logo-text">ISIchat</span>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-name" id="userName">—</div>
+        <div class="user-id" id="userId">—</div>
+        <div class="user-dept" id="userDept">—</div>
+      </div>
+
+      <div class="chat-sidebar-header">
+        <button class="btn-primary btn-new-chat" id="btnNewChat">
+          <span>✏️</span> Nouvelle discussion
+        </button>
+      </div>
+
+      <div class="conversations-list" id="conversationsList">
+        <!-- Loading state -->
+        <div style="text-align:center; padding:20px;">
+          <div class="spinner" style="width:24px;height:24px;margin:0 auto;border-width:2px;"></div>
+        </div>
+      </div>
+
+      <!-- Search Overlay directly inside sidebar -->
+      <div class="search-overlay" id="searchOverlay">
+        <div class="search-header">
+          <input type="text" id="searchInput" placeholder="Chercher un étudiant..." autocomplete="off">
+          <button class="btn-close-search" id="btnCloseSearch">✕</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <a class="nav-item" id="btnLogout" href="#">
+          <span class="nav-icon">🚪</span> Déconnexion
+        </a>
+      </div>
+    </aside>
+
+    <!-- ── Main Area ───────────────────────────────────────── -->
+    <div class="main-area" id="mainArea">
+
+      <!-- Intro State (when no conversation selected) -->
+      <div class="chat-intro" id="chatIntro">
+        <div class="logo-icon"><img src="/assets/images/logo.png" alt="ISIchat"
+            style="width:100%;height:100%;object-fit:contain;opacity:0.6;"></div>
+        <h2 style="font-size:24px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Bienvenue sur ISIchat
+        </h2>
+        <p style="font-size:15px;max-width:300px;">Sélectionnez une conversation dans le menu ou démarrez une nouvelle
+          discussion.</p>
+      </div>
+
+      <!-- Active Chat View (hidden by default) -->
+      <div class="chat-container" id="chatContainer" style="display:none;">
+        <div class="topbar">
+          <div class="topbar-title" id="chatTitle">Sélectionnez une discussion</div>
+        </div>
+
+        <div class="chat-history" id="chatHistory">
+          <!-- Messages go here -->
+        </div>
+
+        <div class="chat-input-area">
+          <input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
+          <button class="btn-attach" id="btnAttach" title="Envoyer une image">🖼️</button>
+          <div class="chat-input-box">
+            <div class="image-preview-container" id="imagePreviewContainer">
+              <img src="" id="imagePreviewThumb" class="image-thumb">
+              <button class="btn-remove-image" id="btnRemoveImage">✕</button>
+            </div>
+            <!-- We keep a dummy subject input hidden just to pass validation until we drop subject from backend -->
+            <input type="hidden" id="chatSubject" value="Message chat">
+            <textarea class="chat-textarea" id="chatInput" placeholder="Écrivez un message..." rows="1"></textarea>
+          </div>
+          <button class="btn-send disabled" id="btnSend">➤</button>
+          <button class="btn-close-search" id="btnCancelEdit" style="display:none; width:48px; height:48px;" title="Annuler la modification">✕</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/chat.js"></script>
+</body>
+
+</html>

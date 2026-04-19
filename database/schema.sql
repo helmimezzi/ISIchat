@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS messages (
   is_read      BOOLEAN DEFAULT 0,
   is_deleted_sender   BOOLEAN DEFAULT 0,
   is_deleted_receiver BOOLEAN DEFAULT 0,
+  is_edited    BOOLEAN DEFAULT 0,
+  image_data   TEXT,
   sent_at      DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -84,8 +86,8 @@ CREATE INDEX IF NOT EXISTS idx_alerts_unresolved ON alerts(is_resolved, severity
 -- =============================================================
 INSERT OR IGNORE INTO students (student_id, full_name, email, department, year, password_hash, is_admin)
 VALUES
-  ('ADMIN001', 'Admin Système',   'admin@campus.tn',   'IT',          0, '$2b$10$placeholder_hash_admin', 1),
-  ('21CS042',  'Ahmed Ben Ali',   'ahmed@campus.tn',   'Informatique', 3, '$2b$10$placeholder_hash_1',    0),
-  ('22EL017',  'Sarra Mansouri',  'sarra@campus.tn',   'Électronique', 2, '$2b$10$placeholder_hash_2',    0),
-  ('23ME008',  'Yassine Trabelsi','yassine@campus.tn', 'Mécanique',    1, '$2b$10$placeholder_hash_3',    0);
+  ('ADMIN001', 'Admin Système',   'admin@isi.utm.tn',   'IT',          0, '$2b$10$placeholder_hash_admin', 1),
+  ('21CS042',  'Ahmed Ben Ali',   'ahmed@etudiant-isi.utm.tn',   'CS', 3, '$2b$10$placeholder_hash_1',    0),
+  ('22SE017',  'Sarra Mansouri',  'sarra@etudiant-isi.utm.tn',   'SE', 2, '$2b$10$placeholder_hash_2',    0),
+  ('23IRS008', 'Helmi Mezzi', 'helmimezzi@etudiant-isi.utm.tn', 'IRS', 1, '$2b$10$placeholder_hash_3',    0);
 -- Note: Les vrais hashes sont générés via le script seed.js

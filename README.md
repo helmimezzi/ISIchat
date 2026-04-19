@@ -1,9 +1,9 @@
-# CampusMsg — Messagerie Interne Campus
+# ISIchat — Messagerie Interne ISI
 
 ## Architecture Modulaire (Phase 1 → Phase 2)
 
 ```
-campusmsg/
+ISIchat/
 ├── backend/
 │   ├── config/         ← Configuration (DB, sécurité, env)
 │   ├── models/         ← Modèles de données (User, Message, Log)
@@ -29,20 +29,17 @@ campusmsg/
 - [x] Dashboard admin simple
 
 ### Phase 2 — Sécurité Avancée (À VENIR)
-- [ ] 2FA / OTP
+- [ ] 2FA
 - [ ] Chiffrement E2E des messages
 - [ ] Détection d'anomalies comportementales
-- [ ] Audit trail complet
+- [ ] Audit trail complet (journalisation)
 - [ ] Rate limiting avancé par IP + user
+- [ ] Gestion complète des étudiants (Ajout/Suppression) via le panneau Admin
 
 ## Stack Technique
 - **Backend** : Node.js + Express
-- **DB** : SQLite (dev) → PostgreSQL (prod)
+- **DB** : SQLite  → PostgreSQL
 - **Auth** : JWT + bcrypt
-- **Frontend** : HTML/CSS/JS vanilla (sans framework = léger)
+- **Frontend** : HTML/CSS/JS
 
-## Installation
-```bash
-cd backend && npm install
-node server.js
-```
+

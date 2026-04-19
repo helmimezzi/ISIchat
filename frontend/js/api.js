@@ -73,7 +73,11 @@ window.Api = {
   getSent(page = 1)            { return this.get(`/messages/sent?page=${page}`); },
   getMessage(id)               { return this.get(`/messages/${id}`); },
   sendMessage(data)            { return this.post('/messages', data); },
+  editMessage(id, body)        { return this.patch(`/messages/${id}`, { body }); },
+  deleteMessage(id)            { return this.del(`/messages/${id}`); },
   searchUsers()                { return this.get('/messages/users/search'); },
+  getConversations()           { return this.get('/messages/conversations'); },
+  getConversationHistory(id)   { return this.get(`/messages/conversations/${id}`); },
 
   // ── Admin ─────────────────────────────────────────────────
   getDashboard()               { return this.get('/admin/dashboard'); },

@@ -23,7 +23,7 @@ window.handleLogin = async function() {
     const data = await Api.login(studentId, password);
     window.location.href = data.user.isAdmin
       ? '/pages/admin.html'
-      : '/pages/inbox.html';
+      : '/pages/chat.html';
 
   } catch (err) {
     showError(err.message);
@@ -45,12 +45,11 @@ function showError(msg) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Rediriger si déjà connecté
   if (Api.isLoggedIn()) {
     const user = Api.getUser();
     window.location.href = (user && user.isAdmin)
       ? '/pages/admin.html'
-      : '/pages/inbox.html';
+      : '/pages/chat.html';
     return;
   }
 
